@@ -77,6 +77,9 @@ namespace arailib {
     };
 
     template <typename T = double>
+    using Dataset = vector<Data<T>>;
+
+    template <typename T = double>
     using Series = vector<Data<T>>;
 
     template <typename T = double>
@@ -157,13 +160,13 @@ namespace arailib {
     }
 
     template <typename T = double>
-    Series<T> read_csv(const std::string &path, const int& nrows = -1,
-                    const bool &skip_header = false) {
+    Dataset<T> read_csv(const std::string &path, const int& nrows = -1,
+                        const bool &skip_header = false) {
         std::ifstream ifs(path);
         if (!ifs) throw runtime_error("Can't open file!");
         std::string line;
 
-        Series<T> series;
+        Dataset<T> series;
         for (size_t i = 0; (i < nrows) && std::getline(ifs, line); ++i) {
             // if first line is the header then skip
             if (skip_header && (i == 0)) continue;
@@ -176,10 +179,10 @@ namespace arailib {
     const int n_max_threads = omp_get_max_threads();
 
     template <typename T = double>
-    Series<T> load_data(const string& path, int n = 0) {
+    Dataset<T> load_data(const string& path, int n = 0) {
         // file path
         if (path.rfind(".csv", path.size()) < path.size()) {
-            auto series = Series<T>();
+            auto series = Dataset<T>();
             ifstream ifs(path);
             if (!ifs) throw runtime_error("Can't open file!");
             string line;
@@ -191,7 +194,7 @@ namespace arailib {
         }
 
         // dir path
-        auto series = Series<T>(n * 1000);
+        auto series = Dataset<T>(n * 1000);
 #pragma omp parallel for
         for (int i = 0; i < n; i++) {
             const string data_path = path + '/' + to_string(i) + ".csv";
@@ -242,7 +245,7 @@ namespace arailib {
     }
 
     template <typename T>
-    auto scan_knn_search(const Data<T>& query, int k, const Series<T> dataset,
+    auto scan_knn_search(const Data<T>& query, int k, const Dataset<T> dataset,
                          string distance = "euclidean") {
         const auto df = select_distance(distance);
         map<float, reference_wrapper<const Data<T>>> result_map;
