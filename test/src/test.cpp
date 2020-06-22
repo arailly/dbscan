@@ -41,14 +41,24 @@ TEST(dbscan, small_with_graph) {
     string data_path = base_dir + "data1.csv";
     string graph_path = base_dir + "graph1.csv";
 
-    GraphIndex graph;
-    graph.load(data_path, graph_path);
+    const auto dataset = load_data(data_path, -1);
 
     double eps = 2.5;
     int minpts = 3;
 
+    GraphIndex graph;
+    graph.load(data_path, graph_path);
+
+    vector<vector<int>> eps_neighbors_list;
+    for (const auto node : graph.nodes) {
+        const auto eps_neighbor = graph.self_range_search(node.data.id, eps);
+        eps_neighbors_list.emplace_back(eps_neighbor);
+    }
+
+    ASSERT_EQ(eps_neighbors_list[0].size(), 4);
+
     auto dbscan = DBSCAN(eps, minpts);
-    dbscan.fit(data_path);
+    dbscan.fit(dataset, eps_neighbors_list);
 
     ASSERT_EQ(dbscan.cluster.size(), 2);
     ASSERT_EQ(dbscan.database[0].cluster_id, 0);

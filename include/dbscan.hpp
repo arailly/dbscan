@@ -190,7 +190,10 @@ namespace dbscan {
                     break;
                 }
 
-                if (is_over) return result;
+                if (is_over) {
+                    result.erase(result.begin());
+                    return result;
+                }
 
                 const auto& first_unchecked_node = nodes[first_unchecked_id];
                 for (const auto& neighbor_id : first_unchecked_node.neighbors) {
@@ -256,19 +259,13 @@ namespace dbscan {
         }
 
         // cite from https://ja.wikipedia.org/wiki/DBSCAN
-        void fit(const Dataset<>& dataset, const GraphIndex& aknng = GraphIndex()) {
+        void fit(const Dataset<>& dataset,
+                 vector<vector<int>> eps_neighbors_list = vector<vector<int>>()) {
             database = convert(dataset);
 
-            // calculate eps neighbors
-            vector<vector<int>> eps_neighbors_list(database.size());
-
-            // use aknng if aknng is given
-            if (!aknng.empty()) {
-#pragma omp parallel for simd
-                for (int id = 0; id < database.size(); ++id)
-                    eps_neighbors_list[id] = aknng.self_range_search(id, eps);
-            }
-            else {
+            // calculate eps neighbors if eps_neighbors_list is empty
+            if (eps_neighbors_list.empty()) {
+                eps_neighbors_list.resize(database.size());
 #pragma omp parallel for simd
                 for (int id = 0; id < database.size(); ++id)
                     eps_neighbors_list[id] = scan_eps_neighbors(id);
