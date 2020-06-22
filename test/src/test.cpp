@@ -13,14 +13,14 @@ TEST(dbscan, small) {
     auto dbscan = DBSCAN(eps, minpts);
     dbscan.fit(data_path);
 
-    ASSERT_EQ(dbscan.cluster.size(), 2);
+    ASSERT_EQ(dbscan.clusters.size(), 2);
     ASSERT_EQ(dbscan.database[0].cluster_id, 0);
     ASSERT_EQ(dbscan.database[1].cluster_id, 1);
     ASSERT_EQ(dbscan.database[10].cluster_id, -1);
 }
 
 TEST(dbscan, moon) {
-    string data_path = "/home/arai/workspace/dataset/cluster/moon.csv";
+    string data_path = "/home/arai/workspace/dataset/clusters/moon.csv";
     string save_path = "/home/arai/workspace/result/clustering/dbscan/moon.csv";
 
     double eps = 0.2;
@@ -29,9 +29,9 @@ TEST(dbscan, moon) {
     auto dbscan = DBSCAN(eps, minpts);
     dbscan.fit(data_path);
 
-    ASSERT_EQ(dbscan.cluster.size(), 2);
-    ASSERT_EQ(dbscan.cluster[0].size(), 100);
-    ASSERT_EQ(dbscan.cluster[1].size(), 99);
+    ASSERT_EQ(dbscan.clusters.size(), 2);
+    ASSERT_EQ(dbscan.clusters[0].size(), 100);
+    ASSERT_EQ(dbscan.clusters[1].size(), 99);
 
     dbscan.save(save_path);
 }
@@ -60,7 +60,7 @@ TEST(dbscan, small_with_graph) {
     auto dbscan = DBSCAN(eps, minpts);
     dbscan.fit(dataset, eps_neighbors_list);
 
-    ASSERT_EQ(dbscan.cluster.size(), 2);
+    ASSERT_EQ(dbscan.clusters.size(), 2);
     ASSERT_EQ(dbscan.database[0].cluster_id, 0);
     ASSERT_EQ(dbscan.database[1].cluster_id, 1);
     ASSERT_EQ(dbscan.database[10].cluster_id, -1);

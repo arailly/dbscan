@@ -26,7 +26,7 @@ namespace dbscan {
         return result;
     }
 
-    using Cluster = vector<vector<int>>;
+    using Clusters = vector<vector<int>>;
 
     struct Node {
         const Data<> data;
@@ -212,7 +212,7 @@ namespace dbscan {
         double eps;
         int minpts;
         Database database;
-        Cluster cluster;
+        Clusters clusters;
 
         DBSCAN(double eps, int minpts) : eps(eps), minpts(minpts) {}
 
@@ -231,13 +231,13 @@ namespace dbscan {
 
         void assign(Point& point, int cluster_id) {
             point.cluster_id = cluster_id;
-            cluster[cluster_id].emplace_back(point.id);
+            clusters[cluster_id].emplace_back(point.id);
         }
 
         void expand_cluster(Point& point, vector<int> neighbors, int cluster_id,
                             const vector<vector<int>>& eps_neighbors_list,
                             unordered_map<int, bool>& visited) {
-            // assign cluster
+            // assign clusters
             assign(point, cluster_id);
 
             for (int i = 0; i < neighbors.size(); ++i) {
@@ -284,7 +284,7 @@ namespace dbscan {
                     point.cluster_id = -1; // noise
                 else {
                     ++cluster_id;
-                    cluster.resize(cluster_id + 1);
+                    clusters.resize(cluster_id + 1);
                     expand_cluster(point, eps_neighbors, cluster_id,
                                    eps_neighbors_list, visited);
                 }
