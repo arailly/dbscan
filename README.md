@@ -17,8 +17,6 @@ using namespace dbscan;
 
 int main() {
     const string data_path = "path/to/data.csv";
-    const string query_path = "path/to/query.csv";
-    const string save_path = "path/to/result.csv";
     const unsigned n = 1000; // data size
     const float eps = 1.0; // epsilon
     const int minpts = 5; // minpts
